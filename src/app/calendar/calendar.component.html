@@ -1,21 +1,23 @@
 <div class="container" cdkDropListGroup>
   <div class="calendar-container">
     <div class="calendar-header">
-      <div>
-        <h2
-          class="calendar-month"
-          *ngIf="currentView === 'month' || currentView === 'week'"
-        >
-          {{ viewDate | date : "MMMM" }}
-          <span>{{ viewDate | date : "y" }}</span>
-        </h2>
-        <h2 class="calendar-month" *ngIf="currentView === 'day'">
-          {{ viewDate | date : "d MMMM" }}
-          <span>{{ viewDate | date : "y" }}</span>
-        </h2>
-        <span class="calendar-dayname" *ngIf="currentView === 'day'">
-          {{ viewDate | date : "EEEE" }}
-        </span>
+      <div class="calendar-selector">
+        <div class="scrollable-month-year" (mouseenter)="showAlert(); mouseEnterTime = now()" (mouseleave)="hideAlert()">
+          <div class="month-year" (wheel)="onScroll($event)">
+            <h2 class="calendar-month" *ngIf="currentView === 'month' || currentView === 'week'">
+              {{ viewDate | date : "MMMM" }}
+              <span>{{ viewDate | date : "y" }}</span>
+            </h2>
+            <h2 class="calendar-month" *ngIf="currentView === 'day'">
+              {{ viewDate | date : "d MMMM" }}
+              <span>{{ viewDate | date : "y" }}</span>
+            </h2>
+          </div>
+        </div>
+        
+        <div class="alert" *ngIf="showAlertMessage" [@fadeAnimation]>
+          Scroll the mouse to change the MM/YYYY
+        </div>
       </div>
       <mat-button-toggle-group
         class="calendar-view-toggle"

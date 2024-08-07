@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 
 import { MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import { trigger, style, animate, transition } from '@angular/animations';
 import { AppointmentDialogComponent } from '../appointment-dialog/appointment-dialog.component';
 
 interface Appointment {
@@ -23,6 +24,19 @@ export enum CalendarView {
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
+  animations: [
+    trigger('zigzagAnimation', [
+      transition(':enter', [
+        style({ transform: 'translateY(-20px)', opacity: 0 }),
+        animate('300ms ease-in-out', style({ transform: 'translateY(0)', opacity: 1 })),
+        animate('300ms ease-in-out', style({ transform: 'translateY(-10px)' })),
+        animate('300ms ease-in-out', style({ transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in-out', style({ transform: 'translateY(-20px)', opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class CalendarComponent {
   viewDate: Date = new Date();
@@ -30,6 +44,35 @@ export class CalendarComponent {
   selectedStartTime: string | undefined;
   weekDays: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   monthDays: Date[] = [];
+  showAlertMessage: boolean = false;
+  mouseEnterTime: number = 0;
+  @ViewChild('monthYearContainer') monthYearContainer!: ElementRef;
+  onScroll(event: WheelEvent) {
+    event.preventDefault();
+    const delta = Math.sign(event.deltaY);
+    
+    if (delta > 0) {
+      //this.viewDate.setMonth(this.viewDate.getMonth() + 1); 
+      this.previous();
+    } else {
+      //this.viewDate.setMonth(this.viewDate.getMonth() - 1); 
+      this.next();
+    }
+  }
+  showAlert() {
+    this.showAlertMessage = true;
+    setTimeout(() => {
+      this.hideAlert();
+    }, 2000);
+  }
+
+  hideAlert() {
+    this.showAlertMessage = false;
+  }
+
+  now() {
+    return Date.now();
+  }
   appointments: Appointment[] = [
     {
       uuid: '00000000-0000-0000-0000-000000000001',
